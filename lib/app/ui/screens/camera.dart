@@ -1,13 +1,12 @@
-import 'package:camera/camera.dart';
+import 'package:ercross/app/data/web_rtc_connection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 
-import '../../data/video_feed_provider.dart';
 import '../colors.dart';
 
 class CameraScreen extends StatefulWidget {
-  final VideoFeedProvider feedProvider;
-  const CameraScreen({required this.feedProvider, super.key});
+  final WebRTCConnection connection;
+  const CameraScreen({required this.connection, super.key});
 
   @override
   State<CameraScreen> createState() => _CameraScreenState();
@@ -48,24 +47,25 @@ class _CameraScreenState extends State<CameraScreen>
                   left: 0,
                   right: 0,
                   child: RTCVideoView(
-                    widget.feedProvider.webRTCConnection.localRenderer,
-                    filterQuality: FilterQuality.high,
+                    widget.connection.localRenderer,
+                    filterQuality: FilterQuality.medium,
+                    objectFit: RTCVideoViewObjectFit.RTCVideoViewObjectFitCover,
+                    mirror: true,
                   )),
-              Positioned(
+              /*Positioned(
                   bottom: 40,
                   left: 0,
                   right: 0,
-                  child: _CameraFeedControlBox(
-                      widget.feedProvider.cameraController))
+                  child:
+                      _CameraFeedControlBox(widget.connection.cameraController))*/
             ],
           )),
     );
   }
 }
 
-class _CameraFeedControlBox extends StatelessWidget {
-  final CameraController controller;
-  const _CameraFeedControlBox(this.controller);
+class _CameraToolBox extends StatelessWidget {
+  const _CameraToolBox();
 
   @override
   Widget build(BuildContext context) {

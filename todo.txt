@@ -1,0 +1,2 @@
+1. Enable client choose preferred stream resolution
+2. Handle signal server error messages from Camera page

@@ -1,7 +1,7 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'package:ercross/app/data/key_value_storage.dart';
-import 'package:ercross/app/data/video_feed_provider.dart';
+import 'package:ercross/app/data/web_rtc_connection.dart';
 import 'package:ercross/app/ui/colors.dart';
 import 'package:ercross/app/ui/value_notifiers.dart';
 import 'package:flutter/material.dart';
@@ -48,7 +48,7 @@ class _ConnectionConfigurationScreenState
       body: GestureDetector(
         child: AbsorbPointer(
           absorbing: !(videoFeedConnectionStateNotifier.value ==
-              VideoFeedConnectionState.disconnected),
+              WebRTCConnectionState.disconnected),
           child: SafeArea(
               minimum: const EdgeInsets.fromLTRB(18, 20, 18, 10),
               child: Form(
@@ -120,12 +120,12 @@ class _ConnectionConfigurationScreenState
     KeyValueStorage.updateIpAddress(_ipAddress!);
     KeyValueStorage.updatePort(_port!);
 
-    final feedProvider = VideoFeedProvider(
-      signalServerIpAddress: _ipAddress!,
-      signalServerPort: _port!,
+    final connection = WebRTCConnection(
+      signalingServerIPAddress: _ipAddress!,
+      signalingServerPort: _port!,
     );
     try {
-      await feedProvider.start();
+      await connection.start();
     } catch (e) {
       AppOverlay.dismissLoadingIndicator();
       AppOverlay.showErrorInfo(
@@ -135,6 +135,6 @@ class _ConnectionConfigurationScreenState
 
     AppOverlay.dismissLoadingIndicator();
     Navigator.of(context).push(MaterialPageRoute(
-        builder: (_) => CameraScreen(feedProvider: feedProvider)));
+        builder: (_) => CameraScreen(connection: connection)));
   }
 }

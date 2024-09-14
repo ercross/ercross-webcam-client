@@ -1,12 +1,12 @@
 // ignore_for_file: use_build_context_synchronously
 import 'dart:math';
+import 'package:ercross/app/data/web_rtc_connection.dart';
 import 'package:ercross/app/ui/screens/camera.dart';
 import 'package:ercross/app/ui/screens/signal_server_address_config.dart';
 import 'package:ercross/app/ui/value_notifiers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-import '../../../data/video_feed_provider.dart';
 import '../../colors.dart';
 import '../../shared_widgets/overlay/overlay.dart';
 
@@ -21,7 +21,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  VideoFeedProvider? _feedProvider;
+  WebRTCConnection? _connection;
 
   @override
   Widget build(BuildContext context) {
@@ -102,54 +102,52 @@ class _HomeScreenState extends State<HomeScreen> {
       return;
     }
 
-    _feedProvider ??= VideoFeedProvider(
-        signalServerIpAddress: ipAddressValueNotifier.value!,
-        signalServerPort: portValueNotifier.value!);
+    _connection ??= WebRTCConnection(
+        signalingServerIPAddress: ipAddressValueNotifier.value!,
+        signalingServerPort: portValueNotifier.value!);
 
     // disconnect if currently connected
     if (videoFeedConnectionStateNotifier.value ==
-        VideoFeedConnectionState.connected) {
+        WebRTCConnectionState.connected) {
       videoFeedConnectionStateNotifier.value =
-          VideoFeedConnectionState.disconnecting;
-      await _feedProvider!.stop();
-      _feedProvider = null;
+          WebRTCConnectionState.disconnecting;
+      await _connection!.terminate();
+      _connection = null;
       videoFeedConnectionStateNotifier.value =
-          VideoFeedConnectionState.disconnected;
+          WebRTCConnectionState.disconnected;
       return;
     }
 
     // connect if currently disconnected
     if (videoFeedConnectionStateNotifier.value ==
-        VideoFeedConnectionState.disconnected) {
-      videoFeedConnectionStateNotifier.value =
-          VideoFeedConnectionState.connecting;
+        WebRTCConnectionState.disconnected) {
+      videoFeedConnectionStateNotifier.value = WebRTCConnectionState.connecting;
 
       try {
-        await _feedProvider!.start();
+        await _connection!.start();
       } catch (e) {
         AppOverlay.showErrorInfo(
             context, "Error encountered while initializing video feed: $e");
         return;
       }
-      videoFeedConnectionStateNotifier.value =
-          VideoFeedConnectionState.connected;
+      videoFeedConnectionStateNotifier.value = WebRTCConnectionState.connected;
       Navigator.of(context).push(MaterialPageRoute(
-          builder: (_) => CameraScreen(feedProvider: _feedProvider!)));
+          builder: (_) => CameraScreen(connection: _connection!)));
     }
   }
 
   _gotoConnectionConfigurationScreen() => Navigator.of(context).push(
       MaterialPageRoute(builder: (_) => const ConnectionConfigurationScreen()));
 
-  String _connectionStatusText(VideoFeedConnectionState state) {
+  String _connectionStatusText(WebRTCConnectionState state) {
     switch (state) {
-      case VideoFeedConnectionState.connecting:
+      case WebRTCConnectionState.connecting:
         return "Connecting...";
-      case VideoFeedConnectionState.connected:
+      case WebRTCConnectionState.connected:
         return "Connected";
-      case VideoFeedConnectionState.disconnected:
+      case WebRTCConnectionState.disconnected:
         return "Disconnected";
-      case VideoFeedConnectionState.disconnecting:
+      case WebRTCConnectionState.disconnecting:
         return "Disconnecting...";
       default:
         return "Unknown state";

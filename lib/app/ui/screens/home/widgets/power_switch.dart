@@ -1,7 +1,7 @@
 part of '../home.dart';
 
 class _PowerSwitchButton extends StatefulWidget {
-  final VideoFeedConnectionState state;
+  final WebRTCConnectionState state;
 
   final Function() onPressed;
 
@@ -80,8 +80,8 @@ class _PowerSwitchButtonState extends State<_PowerSwitchButton>
       duration: const Duration(milliseconds: 100),
       vsync: this,
     );
-    if (widget.state == VideoFeedConnectionState.connecting ||
-        widget.state == VideoFeedConnectionState.disconnecting) {
+    if (widget.state == WebRTCConnectionState.connecting ||
+        widget.state == WebRTCConnectionState.disconnecting) {
       _controller.repeat(reverse: true);
     }
     _scaleAnimation = Tween<double>(begin: 1.0, end: 0.9).animate(
@@ -127,9 +127,10 @@ class _PowerSwitchButtonState extends State<_PowerSwitchButton>
                       strokeWidth: widget.strokeWidth,
                       dashWidth: widget.dashWidth,
                       dashSpace: widget.dashSpace,
-                      strokeColor: widget.state == VideoFeedConnectionState.connected
-                          ? widget.onStateGradient.colors[0]
-                          : widget.offStateGradient.colors[0],
+                      strokeColor:
+                          widget.state == WebRTCConnectionState.connected
+                              ? widget.onStateGradient.colors[0]
+                              : widget.offStateGradient.colors[0],
                     ),
                   ),
                 )
@@ -141,7 +142,7 @@ class _PowerSwitchButtonState extends State<_PowerSwitchButton>
                     strokeWidth: widget.strokeWidth,
                     dashWidth: widget.dashWidth,
                     dashSpace: widget.dashSpace,
-                    strokeColor: widget.state == VideoFeedConnectionState.connected
+                    strokeColor: widget.state == WebRTCConnectionState.connected
                         ? widget.onStateGradient.colors[0]
                         : widget.offStateGradient.colors[0],
                   ),
@@ -156,7 +157,7 @@ class _PowerSwitchButtonState extends State<_PowerSwitchButton>
               height: innerCircleSize,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                gradient: widget.state == VideoFeedConnectionState.connected
+                gradient: widget.state == WebRTCConnectionState.connected
                     ? widget.onStateGradient
                     : widget.offStateGradient,
               ),
